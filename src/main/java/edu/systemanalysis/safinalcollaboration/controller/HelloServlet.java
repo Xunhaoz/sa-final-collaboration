@@ -1,4 +1,4 @@
-package edu.systemanalysis.safinalcollaboration;
+package edu.systemanalysis.safinalcollaboration.controller;
 
 import java.io.*;
 import javax.servlet.http.*;
