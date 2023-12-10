@@ -24,6 +24,17 @@ public class Course {
         this.createTime = createTime;
     }
 
+    public Course(int id, String title, String teacher, String content, String difficulty, Date midtermTime, Date finalTime) {
+        this.id = id;
+        this.title = title;
+        this.teacher = teacher;
+        this.content = content;
+        this.difficulty = difficulty;
+        this.midtermTime = midtermTime;
+        this.finalTime = finalTime;
+        helper.updateCourse(this);
+    }
+
     public Course(String title, String teacher, String content, String difficulty, Date midtermTime, Date finalTime) {
         this.title = title;
         this.teacher = teacher;
@@ -109,5 +120,20 @@ public class Course {
         jsonObject.put("finalTime", getFinalTime());
         jsonObject.put("createTime", getCreateTime());
         return jsonObject;
+    }
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", teacher='" + teacher + '\'' +
+                ", content='" + content + '\'' +
+                ", difficulty='" + difficulty + '\'' +
+                ", midtermTime=" + midtermTime +
+                ", finalTime=" + finalTime +
+                ", createTime=" + createTime +
+                ", helper=" + helper +
+                '}';
     }
 }

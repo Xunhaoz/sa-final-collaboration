@@ -56,7 +56,7 @@
 
         <!-- Nav Item - Charts -->
         <li class="nav-item">
-            <a class="nav-link" href="ai-course.html">
+            <a class="nav-link" href="ai-course.jsp">
                 <i class="fas fa-fw fa-chart-area"></i>
                 <span>Course Page</span></a>
         </li>
@@ -294,7 +294,7 @@
             success: function (response) {
                 response = JSON.parse(response);
                 if (response.status === 200) {
-                    alert(response.message);
+                    location.reload();
                 } else {
                     alert(response.message);
                 }

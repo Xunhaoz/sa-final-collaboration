@@ -1,5 +1,7 @@
 <%@ page import="org.json.JSONArray" %>
 <%@ page import="org.json.JSONObject" %>
+<%@ page import="java.util.Set" %>
+<%@ page import="com.example.front.app.User" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,7 +30,9 @@
 </head>
 
 <body id="page-top">
-
+<%
+    User user = (User) request.getAttribute("user");
+%>
 <!-- Page Wrapper -->
 <div id="wrapper">
 
@@ -57,7 +61,7 @@
 
         <!-- Nav Item - Charts -->
         <li class="nav-item">
-            <a class="nav-link" href="ai-course.html">
+            <a class="nav-link" href="ai-course.jsp">
                 <i class="fas fa-fw fa-chart-area"></i>
                 <span>Course Page</span></a>
         </li>
@@ -136,7 +140,7 @@
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"><%= user.getLastName() + " " + user.getFirstName()%></span>
                             <img class="img-profile rounded-circle"
                                  src="img/undraw_profile.svg">
                         </a>
@@ -157,7 +161,10 @@
 
             <!-- Begin Page Content -->
             <div class="container-fluid">
-
+                <%
+                    Boolean userIdentity = user.getIdentity();
+                    if (userIdentity) {
+                %>
                 <!-- Page Heading -->
                 <div class="card shadow mb-4">
 
@@ -251,11 +258,12 @@
                         <div class="form-group row justify-content-end">
                             <div class="col-lg-3 col-sm-3 mb-3 mb-sm-0">
                                 <div class="p-3">
-                                    <a href="#" class="btn btn-success btn-icon-split" id="CorU" onclick="createCourse()">
+                                    <a href="#" class="btn btn-success btn-icon-split" id="CorU"
+                                       onclick="createCourse()">
                                         <span class="icon text-white-50">
                                             <i class="fas fa-check"></i>
                                         </span>
-                                        <span class="text">Confirm</span>
+                                        <span class="text" id="CorUText">Confirm</span>
                                     </a>
                                 </div>
                             </div>
@@ -263,6 +271,9 @@
 
                     </div>
                 </div>
+                <%
+                    }
+                %>
 
 
                 <!-- DataTales Example -->
@@ -282,6 +293,7 @@
                                 <tbody>
                                 <%
                                     JSONArray jsonArray = (JSONArray) request.getAttribute("courseList");
+                                    Set<Integer> set = (Set<Integer>) request.getAttribute("selectedSet");
                                     for (int i = 0; i < jsonArray.length(); i++) {
                                 %>
                                 <tr>
@@ -300,6 +312,9 @@
                                         </a>
                                     </th>
                                     <th>
+                                        <%
+                                            if (userIdentity) {
+                                        %>
                                         <a href="#" class="btn btn-success btn-circle btn-sm"
                                            onclick="selectCourse(<%=jsonArray.getJSONObject(i).getInt("id")%>)"
                                         >
@@ -310,6 +325,32 @@
                                         >
                                             <i class="fas fa-trash"></i>
                                         </a>
+                                        <%
+                                            }
+                                        %>
+
+                                        <%
+                                            if (!userIdentity) {
+                                                if (!set.contains(jsonArray.getJSONObject(i).getInt("id"))) {
+                                        %>
+                                        <a href="#" class="btn btn-success btn-circle btn-sm"
+                                           onclick="createStudentCourse(<%=jsonArray.getJSONObject(i).getInt("id")%>)"
+                                        >
+                                            <i class="fas fa-check"></i>
+                                        </a>
+                                        <%
+                                        } else {
+                                        %>
+                                        <a href="#" class="btn btn-danger btn-circle btn-sm"
+                                           onclick="deleteStudentCourse(<%=jsonArray.getJSONObject(i).getInt("id")%>)"
+                                        >
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+
+                                        <%
+                                                }
+                                            }
+                                        %>
                                     </th>
                                 </tr>
                                 <%
@@ -437,7 +478,35 @@
         });
     }
 
-    function updateCourse(id){
+    function updateCourse(id) {
+        let data = {
+            "id": id,
+            "title": $('#title').val(),
+            "teacher": $('#teacher').val(),
+            "content": $('#courseContent').val(),
+            "difficult": $('#difficult').val(),
+            "midtermTime": $('#midtermTime').val(),
+            "finalTime": $('#finalTime').val()
+        }
+
+        // 發送POST請求
+        $.ajax({
+            type: 'PUT',
+            url: '/front_war_exploded/course',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function (response) {
+                response = JSON.parse(response);
+                if (response.status === 200) {
+                    location.reload();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (error) {
+                console.error('Error:', error);
+            }
+        });
 
     }
 
@@ -459,9 +528,8 @@
                     $('#difficult').val(response.response.difficult);
                     $('#midtermTime').val(response.response.midtermTime);
                     $('#finalTime').val(response.response.finalTime);
-                    $('#CorU').onclick = function () {
-
-                    }
+                    $("#CorUText").text("Update");
+                    $("#CorU").attr("onclick", "updateCourse(" + response.response.id + ")");
                 }
             },
             error: function () {
@@ -469,6 +537,57 @@
             }
         });
     }
+
+    function createStudentCourse(id) {
+        let data = {
+            "id": id
+        }
+
+        // 發送POST請求
+        $.ajax({
+            type: 'POST',
+            url: '/front_war_exploded/student-course',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function (response) {
+                response = JSON.parse(response);
+                if (response.status === 200) {
+                    location.reload();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+
+    function deleteStudentCourse(id) {
+        let data = {
+            "id": id
+        }
+
+        // 發送POST請求
+        $.ajax({
+            type: 'DELETE',
+            url: '/front_war_exploded/student-course',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function (response) {
+                response = JSON.parse(response);
+                if (response.status === 200) {
+                    location.reload();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+
 </script>
 </body>
 

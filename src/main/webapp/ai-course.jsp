@@ -1,3 +1,7 @@
+<%@ page import="com.example.front.app.Course" %>
+<%@ page import="java.util.Objects" %>
+<%@ page import="org.json.JSONObject" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -152,18 +156,18 @@
 
             <!-- Begin Page Content -->
             <div class="container-fluid">
-
+                <%
+                    Course course = (Course) request.getAttribute("course");
+                %>
                 <!-- Page Heading -->=
                 <div class="row">
                     <div class="col-12">
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h3 class="m-0 font-weight-bold text-primary">Course Description</h3>
+                                <h3 class="m-0 font-weight-bold text-primary"><%= course.getTitle() %></h3>
                             </div>
                             <div class="card-body">
-                                The styling for this basic card example is created by using default Bootstrap
-                                utility classes. By using utility classes, the style of the card component can be
-                                easily modified with no need for any custom CSS!
+                                <%= course.getContent() %>
                             </div>
                         </div>
                     </div>
@@ -221,7 +225,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
-                                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <table class="table table-bordered" id="dataTable">
                                         <thead>
                                         <tr>
                                             <th>Audio ID</th>
@@ -292,7 +296,7 @@
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             Create Time
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">2023-01-25</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= course.getCreateTime() %></div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -309,7 +313,7 @@
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             Difficulty
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">HARD</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= course.getDifficulty() %></div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
@@ -326,7 +330,7 @@
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             Midterm Date
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">2023-01-02</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= course.getMidtermTime() %></div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -343,7 +347,7 @@
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             Final Date
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">2023-01-05</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= course.getFinalTime() %></div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-calendar fa-2x text-gray-300"></i>
