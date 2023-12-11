@@ -109,7 +109,7 @@ public class Course {
         this.createTime = createTime;
     }
 
-    public JSONObject getObject(){
+    public JSONObject getObject() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", getId());
         jsonObject.put("title", getTitle());
@@ -124,16 +124,6 @@ public class Course {
 
     @Override
     public String toString() {
-        return "Course{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", teacher='" + teacher + '\'' +
-                ", content='" + content + '\'' +
-                ", difficulty='" + difficulty + '\'' +
-                ", midtermTime=" + midtermTime +
-                ", finalTime=" + finalTime +
-                ", createTime=" + createTime +
-                ", helper=" + helper +
-                '}';
+        return "Course{" + "id=" + id + ", title='" + title + '\'' + ", teacher='" + teacher + '\'' + ", content='" + content + '\'' + ", difficulty='" + difficulty + '\'' + ", midtermTime=" + midtermTime + ", finalTime=" + finalTime + ", createTime=" + createTime + ", helper=" + helper + '}';
     }
 }

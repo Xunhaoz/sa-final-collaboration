@@ -1,12 +1,9 @@
 <%@ page import="com.example.front.app.Course" %>
-<%@ page import="java.util.Objects" %>
-<%@ page import="org.json.JSONObject" %>
+<%@ page import="org.json.JSONArray" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -159,12 +156,14 @@
                 <%
                     Course course = (Course) request.getAttribute("course");
                 %>
-                <!-- Page Heading -->=
+                <!-- Page Heading -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h3 class="m-0 font-weight-bold text-primary"><%= course.getTitle() %></h3>
+                                <h3 class="m-0 font-weight-bold text-primary">
+                                    <%= course.getTitle() %>
+                                </h3>
                             </div>
                             <div class="card-body">
                                 <%= course.getContent() %>
@@ -184,7 +183,7 @@
                                                 <label class="text-lg text-primary">TEXT</label>
                                                 <div class="form-group">
                                                     <input type="text" class="form-control form-control-user"
-                                                           placeholder="Some text">
+                                                           placeholder="Some text" id="text">
                                                 </div>
                                             </div>
                                         </div>
@@ -195,21 +194,22 @@
                                                 <label class="text-lg text-primary">AUDIOUS</label>
                                                 <div class="form-group">
                                                     <input type="file" class="form-control-file form-control-user"
-                                                           placeholder="Some audious text">
+                                                           placeholder="Some audious text" id="fileInput">
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="form-group row justify-content-end">
+                                <div class="form-group row">
                                     <div class="col-lg-3 col-sm-3 mb-1 mb-sm-0">
                                         <div class="p-3">
-                                            <a href="#" class="btn btn-success btn-icon-split">
+                                            <a href="#" class="btn btn-success btn-icon-split"
+                                               onclick="uploadFile(<%= course.getId() %>)" id="CorU">
                                                     <span class="icon text-white-50">
                                                         <i class="fas fa-check"></i>
                                                     </span>
-                                                <span class="text">Confirm</span>
+                                                <span class="text" id="CorUText">Confirm</span>
                                             </a>
                                         </div>
                                     </div>
@@ -234,51 +234,39 @@
                                         </tr>
                                         </thead>
                                         <tbody>
+                                        <%
+                                            JSONArray audio = (JSONArray) request.getAttribute("audio");
+                                            for (int i = 0; i < audio.length(); i++) {
+                                        %>
                                         <tr>
-                                            <th>001</th>
-                                            <th>Hello everyone</th>
+                                            <th><%= audio.getJSONObject(i).getInt("id") %>
+                                            </th>
+                                            <th><%= audio.getJSONObject(i).getString("text") %>
+                                            </th>
                                             <th>
-                                                <a href="#" class="btn btn-success btn-circle btn-sm">
+                                                <% if (!audio.getJSONObject(i).has("featureToken")) { %>
+
+                                                <a href="#" class="btn btn-success btn-circle btn-sm"
+                                                   onclick="selectAudio(<%= audio.getJSONObject(i).getInt("id") %>)">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="#" class="btn btn-danger btn-circle btn-sm">
+                                                <%}%>
+                                                <a href="#" class="btn btn-danger btn-circle btn-sm"
+                                                   onclick="deleteAudio(<%= audio.getJSONObject(i).getInt("id") %>)">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
-                                                <a href="#" class="btn btn-info btn-circle btn-sm">
+                                                <% if (!audio.getJSONObject(i).has("featureToken")) { %>
+                                                <a href="#" class="btn btn-info btn-circle btn-sm"
+                                                   onclick="judgeAudio(<%= audio.getJSONObject(i).getInt("id") %>)">
                                                     <i class="fas fa-check"></i>
                                                 </a>
+                                                <%}%>
+
                                             </th>
                                         </tr>
-                                        <tr>
-                                            <th>001</th>
-                                            <th>Hello everyone</th>
-                                            <th>
-                                                <a href="#" class="btn btn-success btn-circle btn-sm">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="#" class="btn btn-danger btn-circle btn-sm">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                                <a href="#" class="btn btn-info btn-circle btn-sm">
-                                                    <i class="fas fa-check"></i>
-                                                </a>
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th>001</th>
-                                            <th>Hello everyone</th>
-                                            <th>
-                                                <a href="#" class="btn btn-success btn-circle btn-sm">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <a href="#" class="btn btn-danger btn-circle btn-sm">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                                <a href="#" class="btn btn-info btn-circle btn-sm">
-                                                    <i class="fas fa-check"></i>
-                                                </a>
-                                            </th>
-                                        </tr>
+                                        <%
+                                            }
+                                        %>
                                         </tbody>
                                     </table>
                                 </div>
@@ -296,7 +284,9 @@
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             Create Time
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= course.getCreateTime() %></div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <%= course.getCreateTime() %>
+                                        </div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -313,7 +303,9 @@
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             Difficulty
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= course.getDifficulty() %></div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <%= course.getDifficulty() %>
+                                        </div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
@@ -330,7 +322,9 @@
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             Midterm Date
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= course.getMidtermTime() %></div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <%= course.getMidtermTime() %>
+                                        </div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -347,7 +341,9 @@
                                         <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                             Final Date
                                         </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= course.getFinalTime() %></div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                            <%= course.getFinalTime() %>
+                                        </div>
                                     </div>
                                     <div class="col-auto">
                                         <i class="fas fa-calendar fa-2x text-gray-300"></i>
@@ -404,6 +400,137 @@
         </div>
     </div>
 </div>
+<script>
+
+    function uploadFile(classId) {
+        var fileInput = $('#fileInput')[0];
+        var file = fileInput.files[0];
+
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var base64Data = e.target.result;
+                sendDataToServer(base64Data, classId);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            console.error('No file selected');
+        }
+    }
+
+    function sendDataToServer(base64Data, classId) {
+        var jsonData = {
+            "audio": base64Data,
+            "classId": classId,
+            "text": $("#text").val()
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/front_war_exploded/audio',
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify(jsonData),
+            success: function () {
+                location.reload();
+                console.log('File uploaded successfully');
+            },
+            error: function (xhr, status, error) {
+                console.error('File upload failed. Status: ' + xhr.status);
+            }
+        });
+    }
+
+    function deleteAudio(id) {
+        $.ajax({
+            type: 'DELETE',
+            url: '/front_war_exploded/audio',
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify({"id": id}),
+            success: function () {
+                location.reload();
+                console.log('File uploaded successfully');
+            },
+            error: function (xhr, status, error) {
+                console.error('File upload failed. Status: ' + xhr.status);
+            }
+        });
+    }
+
+    function selectAudio(id) {
+        $.ajax({
+            type: 'GET',
+            url: '/front_war_exploded/audio',
+            contentType: 'application/json;charset=UTF-8',
+            headers: {"id": id},
+            cache: false,
+            dataType: 'json',
+            timeout: 5000,
+            success: function (response) {
+                $("#text").val(response.response.text);
+                $("#CorUText").text("Update");
+                $("#CorU").attr("onclick", "updateAudio(" + response.response.id + ")");
+            },
+            error: function (xhr, status, error) {
+                console.error('File upload failed. Status: ' + xhr.status);
+            }
+        });
+    }
+
+    function updateAudio(AudioId) {
+        var fileInput = $('#fileInput')[0];
+        var file = fileInput.files[0];
+
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var base64Data = e.target.result;
+                updateDataToServer(base64Data, AudioId);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            console.error('No file selected');
+        }
+    }
+
+    function updateDataToServer(base64Data, AudioId) {
+        var jsonData = {
+            "id": AudioId,
+            "audio": base64Data,
+            "text": $("#text").val()
+        };
+
+        $.ajax({
+            type: 'PUT',
+            url: '/front_war_exploded/audio',
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify(jsonData),
+            success: function () {
+                location.reload();
+                console.log('File uploaded successfully');
+            },
+            error: function (xhr, status, error) {
+                console.error('File upload failed. Status: ' + xhr.status);
+            }
+        });
+    }
+
+    function judgeAudio(id) {
+        $.ajax({
+            type: 'POST',
+            url: '/front_war_exploded/judge',
+            contentType: 'application/json;charset=UTF-8',
+            data: JSON.stringify({"id": id}),
+            success: function () {
+                location.reload();
+                console.log('File uploaded successfully');
+            },
+            error: function (xhr, status, error) {
+                console.error('File upload failed. Status: ' + xhr.status);
+            }
+        });
+    }
+
+</script>
 
 <!-- Bootstrap core JavaScript-->
 <script src="vendor/jquery/jquery.min.js"></script>

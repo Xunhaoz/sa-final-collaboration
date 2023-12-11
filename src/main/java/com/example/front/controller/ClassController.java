@@ -7,6 +7,8 @@ import com.example.front.app.Helper;
 import com.example.front.app.User;
 import com.example.front.app.Validation;
 import com.example.front.tools.JsonReader;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,41 +27,32 @@ public class ClassController extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String authority = Validation.validCookie(request);
-        JsonReader jsr = new JsonReader(request);
         JWT jwt = JWTUtil.parseToken(authority);
 
-        Course course = null;
-        int userId = Integer.parseInt(jwt.getPayload("id").toString()), classId;
-        String className = request.getParameter("class");
+        int userId = Integer.parseInt(jwt.getPayload("id").toString());
+        int classId = -1;
 
         try {
-            classId = Integer.parseInt(className);
-            course = helper.selectCourseById(classId);
-            Objects.requireNonNull(course);
-        } catch (Exception ignored) {
+            classId = Integer.parseInt(request.getParameter("class"));
+        } catch (Exception ignore) {
             request.getRequestDispatcher("404.html").forward(request, response);
             return;
         }
 
         User user = helper.selectUserById(userId);
+        Course course = helper.selectCourseById(classId);
+        JSONArray audio = helper.selectAudio(classId);
 
-        System.out.printf(course.toString());
+        request.setAttribute("audio", audio);
         request.setAttribute("course", course);
-        if (user.getIdentity()) {
+        request.setAttribute("user", user);
+
+        if (user.getIdentity()){
             request.getRequestDispatcher("ai-course.jsp").forward(request, response);
+        } else {
+            request.setAttribute("score", helper.selectScoreById(userId));
+            request.getRequestDispatcher("ai-course-student.jsp").forward(request, response);
         }
-        request.getRequestDispatcher("ai-course-student.html").forward(request, response);
-    }
-
-
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-    }
-
-    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    }
-
-
-    public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
     }
 
 

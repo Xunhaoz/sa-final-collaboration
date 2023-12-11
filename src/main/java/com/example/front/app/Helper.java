@@ -98,6 +98,75 @@ public class Helper {
         }
     }
 
+    public void createAudio(Audio audio) {
+        try {
+            conn = DBMgr.getConnection();
+            String sql = "INSERT INTO `front`.`audio`(`class_id`, `user_id`, `text`, `path`) VALUES(?, ?, ?, ?)";
+            pres = conn.prepareStatement(sql);
+            pres.setInt(1, audio.getClassId());
+            pres.setInt(2, audio.getUserId());
+            pres.setString(3, audio.getText());
+            pres.setString(4, audio.getPath());
+            pres.executeUpdate();
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBMgr.close(pres, conn);
+        }
+    }
+
+    public void createScore(ScoreTable scoreTable) {
+        try {
+            conn = DBMgr.getConnection();
+            String sql = "INSERT INTO `front`.`score`(`student_id`, `audio_id`, `final_score`, `intonation`, `loudness`, `phrasing`, `pronunciation`, `rhythm`, `speed`, `intonation_command`, `loudness_command`, `phrasing_command`, `pronunciation_command`, `rhythm_command`, `speed_command`) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            pres = conn.prepareStatement(sql);
+            pres.setInt(1, scoreTable.getStudentId());
+            pres.setInt(2, scoreTable.getAudioId());
+            pres.setInt(3, scoreTable.getFinalScore());
+            pres.setInt(4, scoreTable.getIntonation());
+            pres.setInt(5, scoreTable.getLoudness());
+            pres.setInt(6, scoreTable.getPhrasing());
+            pres.setInt(7, scoreTable.getPronunciation());
+            pres.setInt(8, scoreTable.getRhythm());
+            pres.setInt(9, scoreTable.getSpeed());
+            pres.setString(10, scoreTable.getIntonationCommand());
+            pres.setString(11, scoreTable.getLoudnessCommand());
+            pres.setString(12, scoreTable.getPhrasingCommand());
+            pres.setString(13, scoreTable.getPronunciationCommand());
+            pres.setString(14, scoreTable.getRhythmCommand());
+            pres.setString(15, scoreTable.getSpeedCommand());
+            pres.executeUpdate();
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBMgr.close(pres, conn);
+        }
+    }
+
+    public void createStudentAudio(Audio audio) {
+        try {
+            conn = DBMgr.getConnection();
+            String sql = "INSERT INTO `front`.`audio`(`class_id`, `user_id`, `audio_id`, `text`, `path`) VALUES(?, ?, ?, ?, ?)";
+            pres = conn.prepareStatement(sql);
+            pres.setInt(1, audio.getClassId());
+            pres.setInt(2, audio.getUserId());
+            pres.setInt(3, audio.getAudioId());
+            pres.setString(4, audio.getText());
+            pres.setString(5, audio.getPath());
+            pres.executeUpdate();
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBMgr.close(pres, conn);
+        }
+    }
+
     public User selectUserByEmail(String email) {
         ResultSet res = null;
         User user = null;
@@ -243,6 +312,98 @@ public class Helper {
         return course;
     }
 
+    public JSONArray selectAudio(int classId) {
+        ResultSet res = null;
+        JSONArray jsa = new JSONArray();
+        Audio audio = null;
+        try {
+            conn = DBMgr.getConnection();
+            String sql = "SELECT * FROM `front`.`audio` WHERE audio_id IS NULL AND class_id=?";
+            pres = conn.prepareStatement(sql);
+            pres.setInt(1, classId);
+            res = pres.executeQuery();
+            while (res.next()) {
+                audio = new Audio(res.getInt("id"), res.getInt("class_id"), res.getInt("audio_id"), res.getInt("user_id"), res.getString("text"), res.getString("path"), res.getString("feature_token"));
+                jsa.put(audio.getJSONObject());
+            }
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBMgr.close(pres, conn);
+        }
+        return jsa;
+    }
+
+    public Audio selectAudioById(int id) {
+        ResultSet res = null;
+        Audio audio = null;
+        try {
+            conn = DBMgr.getConnection();
+            String sql = "SELECT * FROM `front`.`audio` WHERE id=?";
+            pres = conn.prepareStatement(sql);
+            pres.setInt(1, id);
+            res = pres.executeQuery();
+            if (res.next()) {
+                audio = new Audio(res.getInt("id"), res.getInt("class_id"), res.getInt("audio_id"), res.getInt("user_id"), res.getString("text"), res.getString("path"), res.getString("feature_token"));
+            }
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBMgr.close(pres, conn);
+        }
+        return audio;
+    }
+
+    public Audio selectAudioByPath(String path) {
+        ResultSet res = null;
+        Audio audio = null;
+        try {
+            conn = DBMgr.getConnection();
+            String sql = "SELECT * FROM `front`.`audio` WHERE path=?";
+            pres = conn.prepareStatement(sql);
+            pres.setString(1, path);
+            res = pres.executeQuery();
+            if (res.next()) {
+                audio = new Audio(res.getInt("id"), res.getInt("class_id"), res.getInt("audio_id"), res.getInt("user_id"), res.getString("text"), res.getString("path"), res.getString("feature_token"));
+            }
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBMgr.close(pres, conn);
+        }
+        return audio;
+    }
+    public JSONArray selectScoreById(int userId) {
+        ResultSet res = null;
+        ScoreTable scoreTable = null;
+        JSONArray jsa = new JSONArray();
+        try {
+            conn = DBMgr.getConnection();
+            String sql = "SELECT * FROM `front`.`score` WHERE student_id=?";
+            pres = conn.prepareStatement(sql);
+            pres.setInt(1, userId);
+            res = pres.executeQuery();
+            while (res.next()) {
+                scoreTable = new ScoreTable(res.getInt("id"), res.getInt("final_score"), res.getDate("create_date"));
+                jsa.put(scoreTable.getObject());
+                System.out.println(scoreTable.getObject().toString());
+            }
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBMgr.close(pres, conn);
+        }
+        return jsa;
+    }
+
     public void updateUser(User user) {
         try {
             conn = DBMgr.getConnection();
@@ -263,6 +424,42 @@ public class Helper {
             DBMgr.close(pres, conn);
         }
     }
+
+    public void updateAudio(Audio audio) {
+        try {
+            conn = DBMgr.getConnection();
+            String sql = "UPDATE `front`.`audio` SET `text`=?, `path`=? WHERE `id`=?";
+            pres = conn.prepareStatement(sql);
+            pres.setString(1, audio.getText());
+            pres.setString(2, audio.getPath());
+            pres.setInt(3, audio.getId());
+            pres.executeUpdate();
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBMgr.close(pres, conn);
+        }
+    }
+
+    public void updateAudioFeature(int id, String token) {
+        try {
+            conn = DBMgr.getConnection();
+            String sql = "UPDATE `front`.`audio` SET `feature_token`=? WHERE `id`=?";
+            pres = conn.prepareStatement(sql);
+            pres.setString(1, token);
+            pres.setInt(2, id);
+            pres.executeUpdate();
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBMgr.close(pres, conn);
+        }
+    }
+
     public void updateCourse(Course course) {
         try {
             conn = DBMgr.getConnection();
@@ -353,4 +550,22 @@ public class Helper {
             DBMgr.close(pres, conn);
         }
     }
+
+    public void deleteAudio(int id) {
+        try {
+            conn = DBMgr.getConnection();
+            String sql = "DELETE FROM `front`.`audio` WHERE `id`=?";
+            pres = conn.prepareStatement(sql);
+            pres.setInt(1, id);
+            pres.execute();
+        } catch (SQLException e) {
+            System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBMgr.close(pres, conn);
+        }
+    }
+
+
 }
