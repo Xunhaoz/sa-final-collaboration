@@ -1,4 +1,5 @@
 <%@ page import="org.json.JSONObject" %>
+<%@ page import="com.example.front.app.User" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,6 +28,10 @@
 
 <body id="page-top">
 
+<%
+    User user = (User) request.getAttribute("user");
+%>
+
 <!-- Page Wrapper -->
 <div id="wrapper">
 
@@ -34,7 +39,7 @@
     <ul style="background-color: #85a59e" class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/front_war_exploded">
             <div class="sidebar-brand-icon rotate-n-15">
                 <i class="fas">
                     <img style="width: 30px; height: 30px" src="./img/audio-waves-white.png" alt="Icon Description">
@@ -47,29 +52,21 @@
 
         <!-- Nav Item - Dashboard -->
         <li class="nav-item">
-            <a class="nav-link" href="course-selection.html">
+            <a class="nav-link" href="/front_war_exploded/course">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>Selection Page</span></a>
         </li>
 
-
-        <!-- Nav Item - Charts -->
-        <li class="nav-item">
-            <a class="nav-link" href="ai-course.jsp">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>Course Page</span></a>
-        </li>
-
         <!-- Nav Item - Tables -->
         <li class="nav-item">
-            <a class="nav-link" href="login-log.jsp">
+            <a class="nav-link" href="/front_war_exploded/login-log">
                 <i class="fas fa-fw fa-table"></i>
                 <span>Login Log</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="personal-info.html">
+            <a class="nav-link" href="/front_war_exploded/user">
                 <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                 <span>Profile</span>
             </a>
@@ -134,14 +131,16 @@
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">
+                                <%= user.getLastName() %> <%= user.getFirstName() %>
+                            </span>
                             <img class="img-profile rounded-circle"
                                  src="img/undraw_profile.svg">
                         </a>
                         <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                              aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="/front_war_exploded/user">
                                 <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Profile
                             </a>
@@ -160,9 +159,6 @@
                 <h1 class="h3 mb-2 text-gray-800">Update Personal Information</h1>
                 <p class="mb-4"></p>
 
-                <%
-                    JSONObject user = (JSONObject) request.getAttribute("user");
-                %>
 
                 <div class="card shadow mb-4">
                     <div class="card-body">
@@ -175,7 +171,7 @@
                                         <div class="form-group">
                                             <input type="text" class="form-control form-control-user"
                                                    aria-describedby="emailHelp" id="email"
-                                                   value='<%= user.getString("email") %>'>
+                                                   value='<%= user.getEmail() %>'>
                                         </div>
                                     </div>
                                 </div>
@@ -189,7 +185,7 @@
                                         <div class="form-group">
                                             <input type="text" class="form-control form-control-user"
                                                    aria-describedby="emailHelp" id="firstName"
-                                                   value='<%= user.getString("firstName") %>'>
+                                                   value='<%= user.getFirstName() %>'>
                                         </div>
                                     </div>
                                 </div>
@@ -203,7 +199,7 @@
                                         <div class="form-group">
                                             <input type="text" class="form-control form-control-user"
                                                    aria-describedby="emailHelp" id="lastName"
-                                                   value='<%= user.getString("lastName") %>'>
+                                                   value='<%= user.getLastName() %>'>
                                         </div>
                                     </div>
                                 </div>
@@ -232,7 +228,7 @@
                                         <div class="form-group">
                                             <input type="radio" class="form-control form-control-user"
                                                    aria-describedby="emailHelp" name="identity" value=false
-                                                <%= user.getBoolean("identity") ? "": "checked" %>
+                                                <%= user.getIdentity() ? "": "checked" %>
                                             >
                                         </div>
                                     </div>
@@ -246,7 +242,7 @@
                                         <div class="form-group">
                                             <input type="radio" class="form-control form-control-user"
                                                    aria-describedby="emailHelp" name="identity" value=true
-                                                <%= user.getBoolean("identity") ? "checked": "" %>
+                                                <%= user.getIdentity() ? "checked": "" %>
                                             >
                                         </div>
                                     </div>

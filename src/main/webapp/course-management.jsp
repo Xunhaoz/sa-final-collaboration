@@ -40,7 +40,7 @@
     <ul style="background-color: #85a59e" class="navbar-nav sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/front_war_exploded">
             <div class="sidebar-brand-icon rotate-n-15">
                 <i class="fas">
                     <img style="width: 30px; height: 30px" src="./img/audio-waves-white.png" alt="Icon Description">
@@ -53,29 +53,21 @@
 
         <!-- Nav Item - Dashboard -->
         <li class="nav-item">
-            <a class="nav-link" href="course-selection.html">
+            <a class="nav-link" href="/front_war_exploded/course">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>Selection Page</span></a>
         </li>
 
-
-        <!-- Nav Item - Charts -->
-        <li class="nav-item">
-            <a class="nav-link" href="ai-course.jsp">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>Course Page</span></a>
-        </li>
-
         <!-- Nav Item - Tables -->
         <li class="nav-item">
-            <a class="nav-link" href="login-log.jsp">
+            <a class="nav-link" href="/front_war_exploded/login-log">
                 <i class="fas fa-fw fa-table"></i>
                 <span>Login Log</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="personal-info.jsp">
+            <a class="nav-link" href="/front_war_exploded/user">
                 <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                 <span>Profile</span>
             </a>
@@ -147,7 +139,7 @@
                         <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                              aria-labelledby="userDropdown">
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="/front_war_exploded/user">
                                 <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                                 Profile
                             </a>
@@ -307,9 +299,15 @@
                                         <%= jsonArray.getJSONObject(i).getString("teacher") %>
                                     </th>
                                     <th>
-                                        <a href="/front_war_exploded/class?class_id=<%= jsonArray.getJSONObject(i).getInt("id") %>">
+                                        <%
+                                            if (userIdentity || set.contains(jsonArray.getJSONObject(i).getInt("id"))) {
+                                        %>
+                                        <a href="/front_war_exploded/class?class=<%= jsonArray.getJSONObject(i).getInt("id") %>">
                                             localhost/front_war_exploded/class?class_id=<%= jsonArray.getJSONObject(i).getInt("id") %>
                                         </a>
+                                        <%
+                                            }
+                                        %>
                                     </th>
                                     <th>
                                         <%

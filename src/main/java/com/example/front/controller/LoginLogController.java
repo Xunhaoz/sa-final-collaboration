@@ -1,7 +1,9 @@
 package com.example.front.controller;
 
 import com.example.front.app.Helper;
+import com.example.front.app.User;
 import com.example.front.tools.JsonReader;
+import com.example.front.util.CookieMgr;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,8 +22,15 @@ public class LoginLogController extends HttpServlet {
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        JSONArray ja = helper.selectLoginLog();
+        User user = CookieMgr.getUser(request);
+        if (user == null) {
+            request.getRequestDispatcher("404.html").forward(request, response);
+            return;
+        }
+
+        JSONArray ja = helper.selectLoginLogById(user.getId());
         request.setAttribute("ja", ja);
+        request.setAttribute("user", user);
         request.getRequestDispatcher("login-log.jsp").forward(request, response);
     }
 

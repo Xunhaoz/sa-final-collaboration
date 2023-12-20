@@ -2,6 +2,7 @@ package com.example.front.app;
 
 import java.sql.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import com.example.front.util.DBMgr;
@@ -82,12 +83,13 @@ public class Helper {
     public void createLoginLog(LoginLog login_log) {
         try {
             conn = DBMgr.getConnection();
-            String sql = "INSERT INTO `front`.`login_log`(`token`, `ip_address`, `browser`, `os`) VALUES(?, ?, ?, ?)";
+            String sql = "INSERT INTO `front`.`login_log`(`user_id`, `token`, `ip_address`, `browser`, `os`) VALUES(?, ?, ?, ?, ?)";
             pres = conn.prepareStatement(sql);
-            pres.setString(1, login_log.getToken());
-            pres.setString(2, login_log.getIpAddress());
-            pres.setString(3, login_log.getBrowser());
-            pres.setString(4, login_log.getOs());
+            pres.setInt(1, login_log.getUserId());
+            pres.setString(2, login_log.getToken());
+            pres.setString(3, login_log.getIpAddress());
+            pres.setString(4, login_log.getBrowser());
+            pres.setString(5, login_log.getOs());
             pres.executeUpdate();
         } catch (SQLException e) {
             System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
@@ -195,7 +197,6 @@ public class Helper {
     public User selectUserById(int id) {
         ResultSet res = null;
         User user = null;
-
         try {
             conn = DBMgr.getConnection();
             String sql = "SELECT * FROM `front`.`user` WHERE `id`=?";
@@ -217,18 +218,19 @@ public class Helper {
         return user;
     }
 
-    public JSONArray selectLoginLog() {
+    public JSONArray selectLoginLogById(int userId) {
         ResultSet res = null;
         LoginLog loginLog = null;
         JSONArray ja = new JSONArray();
         try {
             conn = DBMgr.getConnection();
-            String sql = "SELECT * FROM `front`.`login_log`";
+            String sql = "SELECT * FROM `front`.`login_log` WHERE `user_id`=?";
             pres = conn.prepareStatement(sql);
+            pres.setInt(1, userId);
             res = pres.executeQuery();
 
             while (res.next()) {
-                loginLog = new LoginLog(res.getInt("id"), res.getString("token"), res.getString("ip_address"), res.getString("browser"), res.getString("os"), res.getTimestamp("login_time"));
+                loginLog = new LoginLog(res.getInt("id"), res.getInt("user_id"), res.getString("token"), res.getString("ip_address"), res.getString("browser"), res.getString("os"), res.getTimestamp("login_time"));
                 ja.put(loginLog.getObject());
             }
 
@@ -379,20 +381,21 @@ public class Helper {
         }
         return audio;
     }
-    public JSONArray selectScoreById(int userId) {
+
+    public JSONArray selectScoreByIdClass(int userId, int classId) {
         ResultSet res = null;
         ScoreTable scoreTable = null;
         JSONArray jsa = new JSONArray();
         try {
             conn = DBMgr.getConnection();
-            String sql = "SELECT * FROM `front`.`score` WHERE student_id=?";
+            String sql = "SELECT `audio`.`id`, `audio`.`class_id`, `audio`.`user_id`, `score`.`id`, `score`.`final_score`, `score`.`create_date` FROM `front`.`audio` JOIN `front`.`score` ON `audio`.`id` = `score`.`audio_id` WHERE `audio`.`class_id` = ? AND `audio`.`user_id` = ?";
             pres = conn.prepareStatement(sql);
-            pres.setInt(1, userId);
+            pres.setInt(1, classId);
+            pres.setInt(2, userId);
             res = pres.executeQuery();
             while (res.next()) {
                 scoreTable = new ScoreTable(res.getInt("id"), res.getInt("final_score"), res.getDate("create_date"));
                 jsa.put(scoreTable.getObject());
-                System.out.println(scoreTable.getObject().toString());
             }
         } catch (SQLException e) {
             System.err.format("SQL State: %s\n%s\n%s", e.getErrorCode(), e.getSQLState(), e.getMessage());
@@ -425,9 +428,11 @@ public class Helper {
         }
     }
 
+
     public void updateAudio(Audio audio) {
         try {
             conn = DBMgr.getConnection();
+
             String sql = "UPDATE `front`.`audio` SET `text`=?, `path`=? WHERE `id`=?";
             pres = conn.prepareStatement(sql);
             pres.setString(1, audio.getText());

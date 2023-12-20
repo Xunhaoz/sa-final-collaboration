@@ -2,11 +2,9 @@ package com.example.front.controller;
 
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
-import com.example.front.app.Course;
-import com.example.front.app.Helper;
-import com.example.front.app.User;
-import com.example.front.app.Validation;
+import com.example.front.app.*;
 import com.example.front.tools.JsonReader;
+import com.example.front.util.CookieMgr;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -20,18 +18,19 @@ import java.util.Objects;
 
 @WebServlet(name = "class", value = "/class")
 public class ClassController extends HttpServlet {
-    Helper helper = Helper.getHelper();
+    private Helper helper = Helper.getHelper();
 
     public void init() {
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String authority = Validation.validCookie(request);
-        JWT jwt = JWTUtil.parseToken(authority);
+        User user = CookieMgr.getUser(request);
+        if (user == null) {
+            request.getRequestDispatcher("404.html").forward(request, response);
+            return;
+        }
 
-        int userId = Integer.parseInt(jwt.getPayload("id").toString());
         int classId = -1;
-
         try {
             classId = Integer.parseInt(request.getParameter("class"));
         } catch (Exception ignore) {
@@ -39,18 +38,17 @@ public class ClassController extends HttpServlet {
             return;
         }
 
-        User user = helper.selectUserById(userId);
-        Course course = helper.selectCourseById(classId);
+        Course course = new Course(classId);
         JSONArray audio = helper.selectAudio(classId);
 
         request.setAttribute("audio", audio);
         request.setAttribute("course", course);
         request.setAttribute("user", user);
 
-        if (user.getIdentity()){
+        if (user.getIdentity()) {
             request.getRequestDispatcher("ai-course.jsp").forward(request, response);
         } else {
-            request.setAttribute("score", helper.selectScoreById(userId));
+            request.setAttribute("score", helper.selectScoreByIdClass(user.getId(), classId));
             request.getRequestDispatcher("ai-course-student.jsp").forward(request, response);
         }
     }

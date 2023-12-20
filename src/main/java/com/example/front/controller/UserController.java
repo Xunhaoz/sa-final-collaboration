@@ -6,6 +6,8 @@ import cn.hutool.jwt.JWTUtil;
 import com.example.front.app.Helper;
 import com.example.front.app.User;
 import com.example.front.tools.JsonReader;
+import com.example.front.tools.RespMaker;
+import com.example.front.util.CookieMgr;
 import org.json.JSONObject;
 import com.example.front.app.Validation;
 
@@ -18,55 +20,53 @@ import java.io.IOException;
 
 @WebServlet(name = "user", value = "/user")
 public class UserController extends HttpServlet {
-    Helper helper = Helper.getHelper();
-
     public void init() {
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String authority = Validation.validCookie(request);
+        User user = CookieMgr.getUser(request);
 
-        JWT jwt = JWTUtil.parseToken(authority);
-        int id = Integer.parseInt(jwt.getPayload("id").toString());
+        if (user == null) {
+            request.getRequestDispatcher("404.html").forward(request, response);
+            return;
+        }
 
-        User user = helper.selectUserById(id);
-        request.setAttribute("user", user.getObject());
-
+        request.setAttribute("user", user);
         request.getRequestDispatcher("personal-info.jsp").forward(request, response);
-
     }
 
 
     public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        String authority = Validation.validCookie(request);
         JsonReader jsr = new JsonReader(request);
         JSONObject jso = jsr.getObject();
 
-        JWT jwt = JWTUtil.parseToken(authority);
-        int id = Integer.parseInt(jwt.getPayload("id").toString());
         String email = jso.getString("email");
         String firstName = jso.getString("firstName");
         String lastName = jso.getString("lastName");
         String password = jso.getString("password");
         Boolean identity = jso.getBoolean("identity");
 
-        User oldData = helper.selectUserById(id);
+        User oldData = CookieMgr.getUser(request);
+
 
         if (email.isEmpty() || firstName.isEmpty() || lastName.isEmpty() || identity.toString().isEmpty()) {
-            String resp = "{\"status\": 422, \"message\": \"All blank should be filled.\", \"response\": \"\"}";
-            jsr.response(resp, response);
+            jsr.response(RespMaker.makeResp(422, "All blank should be filled.", null), response);
+            return;
+        }
+
+        if (oldData == null) {
+            jsr.response(RespMaker.makeResp(422, "User not Found.", null), response);
             return;
         }
 
         if (password.isEmpty()) {
-            User user = new User(id, firstName, lastName, email, identity);
+            new User(oldData.getId(), firstName, lastName, email, identity);
         } else {
             password = BCrypt.hashpw(password, oldData.getSalt());
-            User user = new User(id, firstName, lastName, email, password, identity);
+            new User(oldData.getId(), firstName, lastName, email, password, identity);
         }
 
-        String resp = "{\"status\": 200, \"message\": \"Update successful.\", \"response\": \"\"}";
-        jsr.response(resp, response);
+        jsr.response(RespMaker.makeResp(200, "Update successful.", null), response);
     }
 
     public void destroy() {

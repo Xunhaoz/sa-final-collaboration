@@ -6,14 +6,15 @@ import java.util.TimeZone;
 import java.sql.Timestamp;
 
 public class LoginLog {
-    private int id;
+    private int id, userId;
     private String token, ipAddress, browser, os;
     private Timestamp loginTime;
 
     private Helper helper = Helper.getHelper();
 
-    public LoginLog(int id, String token, String ipAddress, String bowser, String os, Timestamp loginTime) {
+    public LoginLog(int id, int userId, String token, String ipAddress, String bowser, String os, Timestamp loginTime) {
         this.id = id;
+        this.userId = userId;
         this.token = token;
         this.ipAddress = ipAddress;
         this.browser = bowser;
@@ -21,8 +22,9 @@ public class LoginLog {
         this.loginTime = loginTime;
     }
 
-    public LoginLog(String token, String ipAddress, String bowser, String os) {
+    public LoginLog(int userId, String token, String ipAddress, String bowser, String os) {
         this.token = token;
+        this.userId = userId;
         this.ipAddress = ipAddress;
         this.browser = bowser;
         this.os = os;
@@ -35,6 +37,14 @@ public class LoginLog {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public String getToken() {
@@ -86,7 +96,7 @@ public class LoginLog {
         this.helper = helper;
     }
 
-    public JSONObject getObject(){
+    public JSONObject getObject() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", getId());
         jsonObject.put("token", getToken());

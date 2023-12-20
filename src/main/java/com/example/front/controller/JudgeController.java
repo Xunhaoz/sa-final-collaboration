@@ -38,9 +38,6 @@ public class JudgeController extends HttpServlet {
     public void init() {
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-    }
-
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         JsonReader jsr = new JsonReader(request);
         JSONObject jso = jsr.getObject();
@@ -50,7 +47,7 @@ public class JudgeController extends HttpServlet {
         Audio audio = helper.selectAudioById(audioId);
 
         try {
-            String url = "http://localhost:5000/liveabc-mentorai/build-template";
+            String url = "http://judge.nevercareu.space/liveabc-mentorai/build-template";
             String res = Poster.sendPostRequest(url, audio.getText(), audio.getPath());
             resFromPython = new JSONObject(res);
             helper.updateAudioFeature(audioId, resFromPython.getString("token"));

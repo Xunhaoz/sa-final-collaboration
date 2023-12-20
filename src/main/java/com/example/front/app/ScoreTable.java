@@ -5,10 +5,10 @@ import org.json.JSONObject;
 import java.sql.Date;
 
 public class ScoreTable {
-    int id, studentId, audioId, finalScore, intonation, loudness, phrasing, pronunciation, rhythm, speed;
-    String intonationCommand, loudnessCommand, phrasingCommand, pronunciationCommand, rhythmCommand, speedCommand;
+    private int id, studentId, audioId, classId, finalScore, intonation, loudness, phrasing, pronunciation, rhythm, speed;
+    private String intonationCommand, loudnessCommand, phrasingCommand, pronunciationCommand, rhythmCommand, speedCommand;
 
-    Date createTime;
+    private Date createTime;
     Helper helper = Helper.getHelper();
 
     public ScoreTable(int studentId, int audioId, int finalScore, int intonation, int loudness, int phrasing, int pronunciation, int rhythm, int speed, String intonationCommand, String loudnessCommand, String phrasingCommand, String pronunciationCommand, String rhythmCommand, String speedCommand) {
@@ -30,11 +30,20 @@ public class ScoreTable {
         helper.createScore(this);
     }
 
-    public  ScoreTable(int id, int finalScore, Date createTime) {
+    public ScoreTable(int id, int finalScore, Date createTime) {
         this.id = id;
         this.finalScore = finalScore;
         this.createTime = createTime;
 
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getStudentId() {
@@ -51,6 +60,9 @@ public class ScoreTable {
 
     public void setAudioId(int audioId) {
         this.audioId = audioId;
+    }
+    public int getClassId() {
+        return classId;
     }
 
     public int getFinalScore() {
@@ -182,6 +194,25 @@ public class ScoreTable {
         jsonObject.put("speedCommand", getSpeedCommand());
         if (getCreateTime() != null) jsonObject.put("createTime", getCreateTime().toString());
         return jsonObject;
+    }
+
+    private void copy(ScoreTable scoreTable) {
+        this.id = scoreTable.getId();
+        this.studentId = scoreTable.getStudentId();
+        this.audioId = scoreTable.getAudioId();
+        this.finalScore = scoreTable.getFinalScore();
+        this.intonation = scoreTable.getIntonation();
+        this.loudness = scoreTable.getLoudness();
+        this.phrasing = scoreTable.getPhrasing();
+        this.pronunciation = scoreTable.getPronunciation();
+        this.rhythm = scoreTable.getRhythm();
+        this.speed = scoreTable.getSpeed();
+        this.intonationCommand = scoreTable.getIntonationCommand();
+        this.loudnessCommand = scoreTable.getLoudnessCommand();
+        this.phrasingCommand = scoreTable.getPhrasingCommand();
+        this.pronunciationCommand = scoreTable.getPronunciationCommand();
+        this.rhythmCommand = scoreTable.getRhythmCommand();
+        this.speedCommand = scoreTable.getSpeedCommand();
     }
 }
 

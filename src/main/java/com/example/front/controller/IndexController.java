@@ -25,7 +25,8 @@ public class IndexController extends HttpServlet {
 
     Helper helper = Helper.getHelper();
 
-    public void init() {}
+    public void init() {
+    }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         request.getRequestDispatcher("index.html").forward(request, response);
@@ -72,7 +73,7 @@ public class IndexController extends HttpServlet {
 
         payload.put("id", user.getId());
         String token = JWTUtil.createToken(payload, user.getSalt().getBytes());
-        new LoginLog(token.substring(0, 20), ip, browser, os);
+        new LoginLog(user.getId(), token.substring(0, 20), ip, browser, os);
 
         if (remember) {
             Cookie jwt = new Cookie("Authority", token);

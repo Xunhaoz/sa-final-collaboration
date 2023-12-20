@@ -4,6 +4,8 @@ import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
 import com.example.front.app.*;
 import com.example.front.tools.JsonReader;
+import com.example.front.tools.RespMaker;
+import com.example.front.util.CookieMgr;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -27,22 +29,19 @@ public class CourseController extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         JsonReader jsr = new JsonReader(request);
-        String courseId = request.getHeader("id");
 
-        if (courseId != null && !courseId.isEmpty()) {
-            Course course = helper.selectCourseById(Integer.parseInt(courseId));
-            JSONObject resp = new JSONObject();
-            resp.put("status", 200);
-            resp.put("message", "Select successful.");
-            resp.put("response", course.getObject());
-            jsr.response(resp, response);
+        User user = CookieMgr.getUser(request);
+        if (user == null) {
+            request.getRequestDispatcher("404.html").forward(request, response);
             return;
         }
 
-        String authority = Validation.validCookie(request);
-        JWT jwt = JWTUtil.parseToken(authority);
-        int userId = Integer.parseInt(jwt.getPayload("id").toString());
-        User user = helper.selectUserById(userId);
+        String courseId = request.getHeader("id");
+        if (courseId != null && !courseId.isEmpty()) {
+            Course course = new Course(Integer.parseInt(courseId));
+            jsr.response(RespMaker.makeResp(200, "Select successful.", course.getObject()), response);
+            return;
+        }
 
         JSONArray jsonArray = helper.selectCourse();
         request.setAttribute("courseList", jsonArray);

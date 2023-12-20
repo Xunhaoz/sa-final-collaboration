@@ -3,10 +3,15 @@ package com.example.front.app;
 import org.json.JSONObject;
 
 public class Audio {
-    int id, classId, audioId, userId;
-    String text, path, featureToken;
+    private int id, classId, audioId, userId;
+    private String text, path, featureToken;
 
-    Helper helper = Helper.getHelper();
+    private Helper helper = Helper.getHelper();
+
+    public Audio(int id) {
+        this.id = id;
+        this.copy(helper.selectAudioById(id));
+    }
 
     public Audio(int id, String text, String path) {
         this.id = id;
@@ -23,7 +28,7 @@ public class Audio {
         helper.createAudio(this);
     }
 
-    public Audio(int classId, int userId, int audioId, String text,String path) {
+    public Audio(int classId, int userId, int audioId, String text, String path) {
         this.classId = classId;
         this.userId = userId;
         this.audioId = audioId;
@@ -109,5 +114,15 @@ public class Audio {
         jsonObject.put("path", getPath());
         jsonObject.put("featureToken", getFeatureToken());
         return jsonObject;
+    }
+
+    private void copy(Audio audio) {
+        this.id = audio.getId();
+        this.classId = audio.getClassId();
+        this.audioId = audio.getAudioId();
+        this.userId = audio.getUserId();
+        this.text = audio.getText();
+        this.path = audio.getPath();
+        this.featureToken = audio.getFeatureToken();
     }
 }

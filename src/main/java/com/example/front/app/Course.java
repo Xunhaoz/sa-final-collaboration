@@ -5,13 +5,19 @@ import org.json.JSONObject;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.TimeZone;
 
 public class Course {
-    int id;
-    String title, teacher, content, difficulty;
-    Date midtermTime, finalTime;
-    Timestamp createTime;
+    private int id;
+    private String title, teacher, content, difficulty;
+    private Date midtermTime, finalTime;
+    private Timestamp createTime;
     private Helper helper = Helper.getHelper();
+
+    public Course(int id) {
+        this.id = id;
+        this.copy(helper.selectCourseById(id));
+    }
 
     public Course(int id, String title, String teacher, String content, String difficulty, Date midtermTime, Date finalTime, Timestamp createTime) {
         this.id = id;
@@ -102,6 +108,7 @@ public class Course {
     }
 
     public Timestamp getCreateTime() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC+8"));
         return createTime;
     }
 
@@ -125,5 +132,16 @@ public class Course {
     @Override
     public String toString() {
         return "Course{" + "id=" + id + ", title='" + title + '\'' + ", teacher='" + teacher + '\'' + ", content='" + content + '\'' + ", difficulty='" + difficulty + '\'' + ", midtermTime=" + midtermTime + ", finalTime=" + finalTime + ", createTime=" + createTime + ", helper=" + helper + '}';
+    }
+
+    private void copy(Course course) {
+        this.id = course.getId();
+        this.title = course.getTitle();
+        this.teacher = course.getTeacher();
+        this.content = course.getContent();
+        this.difficulty = course.getDifficulty();
+        this.midtermTime = course.getMidtermTime();
+        this.finalTime = course.getFinalTime();
+        this.createTime = course.getCreateTime();
     }
 }
