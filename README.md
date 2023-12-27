@@ -2,6 +2,29 @@
 
 VoiceMastery 是一個旨在提升英語口語能力的全面網路教育平台。 以下是安裝和使用平台的重要資訊。
 
+## 前端頁面
+
+### 學生評分頁面
+![img](/REAdME-img/學生評分頁面.png)
+### 個人資料更新
+![img](/REAdME-img/個人資料更新.png)
+### 學生選課頁面
+![img](/REAdME-img/學生選課頁面.png)
+### 忘記密碼頁面
+![img](/REAdME-img/忘記密碼頁面.png)
+### 教師評分頁面
+![img](/REAdME-img/教師評分頁面.png)
+### 新增課程頁面
+![img](/REAdME-img/新增課程頁面.png)
+### 登入紀錄頁面
+![img](/REAdME-img/登入紀錄頁面.png)
+### 登入頁面
+![img](/REAdME-img/登入頁面.png)
+### 註冊頁面
+![img](/REAdME-img/註冊頁面.png)
+### 首頁
+![img](/REAdME-img/首頁.png)
+
 ## 安裝方式
 
 ### 系統需求
